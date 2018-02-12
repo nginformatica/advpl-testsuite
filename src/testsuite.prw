@@ -34,6 +34,8 @@
 #define ANSI_SAVE Chr( 27 ) + '7'
 #define ANSI_RESTORE Chr( 27 ) + '8'
 #define ANSI_YELLOW Chr( 27 ) + '[93m'
+#define ANSI_WHITE Chr( 27 ) + '[97m'
+#define ANSI_BG_RED Chr( 27 ) + '[101m'
 
 Class TestSuite
 	Data aErrors As Array
@@ -84,9 +86,12 @@ Method GetFeatures() Class TestSuite
     Return aFeatures
 
 Method ReportError( cFeature, cDescription, nStartedAt, oError ) Class TestSuite
-	aAdd( ::aErrors, { cFeature, oError:Description } )
+    Local cLine := Replicate( '-', Len( oError:Description ) + 4 )
+    aAdd( ::aErrors, { cFeature, oError:Description } )
     ::oLogger:Error( '[{1}] {2} ({3}s)', { cFeature, cDescription, Seconds() - nStartedAt } )
-    ::oLogger:Error( '-------> ' + oError:Description )
+    ::oLogger:Error( cLine )
+    ::oLogger:Error( '| {1} |', { oError:Description } )
+    ::oLogger:Error( cLine )
     ::oLogger:Error( ::FormatStack( oError:ErrorStack ) )
 	Return Self
 
@@ -102,6 +107,7 @@ Method Run( oTester ) Class TestSuite
 	Local cTitle
 	Local cClearScreen
     Local nIndex
+    Local nReport
     Local cFeatDesc
     Local nStartedAt
     Local oLastError
@@ -128,6 +134,7 @@ Method Run( oTester ) Class TestSuite
 
 	oLastError := ErrorBlock()
     Private oThis := Self
+    Private aTestReport := {}
 
     aArea := GetArea()
     Begin Transaction
@@ -135,10 +142,21 @@ Method Run( oTester ) Class TestSuite
             nStartedAt := Seconds()
             cFeatDesc := &( 'oThis:oTester:cDescription_Feat' + aFeatures[ nIndex ] )
             ErrorBlock( { |oError| Self:ReportError( aFeatures[ nIndex ], cFeatDesc, nStartedAt, oError ) } )
+            aTestReport := {}
             Begin Sequence
                 &( 'oThis:oTester:Feat_' + aFeatures[ nIndex ] + '()' )
             End Sequence
             Self:ReportEnd( aFeatures[ nIndex ], cFeatDesc, nStartedAt )
+
+            If ::lVerbose
+                For nReport := 1 To Len( aTestReport )
+                    If aTestReport[ nReport, 1 ]
+                        ::oLogger:Success( '    + ' + aTestReport[ nReport, 2 ], aTestReport[ nReport, 3 ] )
+                    Else
+                        ::oLogger:Error( '    - ' + aTestReport[ nReport, 2 ], aTestReport[ nReport, 3 ] )
+                    EndIf
+                Next
+            EndIf
         Next
 
         DisarmTransaction()
@@ -169,19 +187,26 @@ Method New( xValue ) Class FluentExpr
 Method ToHaveType( cType ) Class FluentExpr
     Local cMyType := ValType( ::xValue )
     If cMyType != cType
+        aAdd( aTestReport, { .F., 'Expected {1} to have type {2}', { cValToChar( ::xValue ), cType } } )
         UserException( 'Expected ' + cMyType + ' to be of type ' + cType )
+        Return
     EndIf
+    aAdd( aTestReport, { .T., 'Expected {1} to have type {2}', { cValToChar( ::xValue ), cType } } )
     Return Self
 
 Method ToBe( xOther ) Class FluentExpr
     If !(::xValue == xOther)
+        aAdd( aTestReport, { .F., 'Expected {1} to be {2}', { cValToChar( ::xValue ), cValToChar( xOther ) } } )
         UserException( 'Expected ' + cValToChar( ::xValue ) + ' to be ' + cValToChar( xOther ) )
+        Return
     EndIf
+    aAdd( aTestReport, { .T., 'Expected {1} to be {2}', { cValToChar( ::xValue ), cValToChar( xOther ) } } )
     Return Self
 
 Method ToThrowError() Class FluentExpr
     Local oError
     Local bError := ErrorBlock( { |oExc| oError := oExc } )
+    Local cSource := GetCBSource( ::xValue )
 
     Begin Sequence
         Eval( ::xValue )
@@ -190,6 +215,9 @@ Method ToThrowError() Class FluentExpr
     ErrorBlock( bError )
 
     If oError == Nil
-        UserException( 'Expected ' + GetCBSource( ::xValue ) + ' to throw error' )
+        aAdd( aTestReport, { .F., 'Expected {1} to throw an error', { cSource } } )
+        UserException( 'Expected ' + cSource + ' to throw error' )
+        Return
     EndIf
+    aAdd( aTestReport, { .T., 'Expected {1} to throw an error', { cSource } } )
     Return Self

@@ -17,6 +17,9 @@ Feature Gravacao TestSuite CentroDeCusto
     ::nRegistros := ( cAliasQry )->QUANTIDADE
     ( cAliasQry )->( dbCloseArea() )
     ::Expect( ::nRegistros ):ToBe( 2 ) // Comeca com 2 registros
+    ::Expect( 10 ):ToBe( 10 )
+    ::Expect( 20 ):ToBe( 20 )
+    ::Expect( 4040 ):ToBe( 4040 )
 
     dbSelectArea( 'CTT' )
     RecLock( 'CTT', .T. )
@@ -38,6 +41,7 @@ Feature Leitura TestSuite CentroDeCusto
     dbSeek( xFilial( 'CTT' ) + 'POMBAL' )
     ::Expect( CTT->CTT_DESC01 ):ToHaveType( 'C' )
     ::Expect( AllTrim( CTT->CTT_DESC01 ) ):ToBe( 'ONDE OS POMBOS HABITAM' )
+    ::Expect( {||1} ):ToThrowError()
     Return
 
 CompileTestSuite CentroDeCusto
