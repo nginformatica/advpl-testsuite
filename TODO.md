@@ -7,6 +7,16 @@
     - [x] `ToBe`
     - [x] `ToThrowError`
     - [x] `ToHaveType`
+    - [ ] `ToBeLessThan`
+    - [ ] `ToBeGreaterThan`
+    - [ ] `ToHaveLength`
+    - [ ] `ToHaveProperty`
+    - [ ] `ToInclude`
+    - [ ] `ToSatisfy`
+    - [ ] `ToBeAFolder`
+    - [ ] `ToBeAFolderWithFiles`
+    - [ ] `ToBeAFile`
+    - [ ] `ToBeAFileWithContents`
 - [ ] Implement deep look on `ToBe`
     - [ ] Different types should make the test fail
     - [ ] Object lookup is by name and properties
