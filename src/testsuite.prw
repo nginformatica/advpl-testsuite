@@ -34,8 +34,6 @@
 #define ANSI_SAVE Chr( 27 ) + '7'
 #define ANSI_RESTORE Chr( 27 ) + '8'
 #define ANSI_YELLOW Chr( 27 ) + '[93m'
-#define ANSI_WHITE Chr( 27 ) + '[97m'
-#define ANSI_BG_RED Chr( 27 ) + '[101m'
 
 Class TestSuite
 	Data aErrors As Array
@@ -63,13 +61,28 @@ Method FormatStack( cStack ) Class TestSuite
     Local cResult := ''
     Local aStack := StrTokArr2( cStack, Chr( 10 ), .T. )
     Local nIndex := 1
+    Local nPos
+    Local cStackFile
+    Local aStackFiles := {}
 
     For nIndex := 1 To Len( aStack )
         If nIndex == 1
             cResult += aStack[ nIndex ] + CRLF
         Else
+            If '(' $ aStack[ nIndex ] .And. '.PRW)' $ aStack[ nIndex ]
+                nPos := At( '(', aStack[ nIndex ] )
+                cStackFile := SubStr( aStack[ nIndex ], nPos + 1, At( ')', aStack[ nIndex ] ) - nPos - 1 )
+                If aScan( aStackFiles, cStackFile ) == 0
+                    aAdd( aStackFiles, cStackFile )
+                EndIf
+            EndIf
+
             cResult += Space( 30 ) + StrTran( aStack[ nIndex ], 'Called', ANSI_YELLOW + 'Called' + ANSI_RED ) + CRLF
         EndIf
+    Next
+
+    For nPos := 1 To Len( aStackFiles )
+        cResult := StrTran( cResult, aStackFiles[ nPos ], ANSI_YELLOW + aStackFiles[ nPos ] + ANSI_RED )
     Next
 
     Return StrTran( cResult, 'THREAD ERROR', ANSI_YELLOW + 'THREAD ERROR' + ANSI_RED )
