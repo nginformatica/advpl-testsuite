@@ -21,3 +21,4 @@
  - [ ] Different types should make the test fail
  - [ ] Object lookup is by name and properties
  - [ ] Array lookup is by length and elements
+- [ ] Create `Not` "magic" property to negate above conditions
