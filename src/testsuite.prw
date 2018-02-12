@@ -41,6 +41,7 @@ Class TestSuite
     Data cDescription As Character
     Data oTester As Object
     Data oLogger As Object
+    Data lVerbose As Logic
     Method New( cName, cDescription ) Constructor
     Method GetFeatures()
     Method Run( oTester )

@@ -1,7 +1,7 @@
 #include 'protheus.ch'
 #include 'testsuite.ch'
 
-TestSuite CentroDeCusto Description 'Testes de gravacao de centro de custo'
+TestSuite CentroDeCusto Description 'Testes de gravacao de centro de custo' Verbose
     Environment 'T3' 'S SC 01'
     Data nRegistros As Numeric
     Feature Gravacao Description 'Grava centro de custo na CTT'
@@ -16,7 +16,7 @@ Feature Gravacao TestSuite CentroDeCusto
     EndSql
     ::nRegistros := ( cAliasQry )->QUANTIDADE
     ( cAliasQry )->( dbCloseArea() )
-    ::Expect( ::nRegistros ):ToBe( 2 ) // Começa com 2 registros
+    ::Expect( ::nRegistros ):ToBe( 2 ) // Comeca com 2 registros
 
     dbSelectArea( 'CTT' )
     RecLock( 'CTT', .T. )

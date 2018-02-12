@@ -1,8 +1,10 @@
 #xcommand TestSuite <cName> ;
     [ <description: Description> <cDesc> ] ;
+    [ <verbose: Verbose> ] ;
     => ;
     Static __NAME__ := <(cName)> ;;
     Static __DESC__ := <cDesc> ;;
+    Static __VERBOSE__ := <.verbose.> ;;
     _ObjNewClass( TestSuite_<cName>, TestSuite ) ;;
     _ObjClassMethod( New, ( cName, cDescription ), ) ;;
     _ObjClassData( cDescription, String, , <cDesc> ) ;;
@@ -33,5 +35,6 @@
         Return Self ;;
     Function U_<cSuite> ;;
         Local oTester := TestSuite_<cSuite>():New( __NAME__, __DESC__ ) ;;
+        oTester:lVerbose := __VERBOSE__ ;;
         oTester:Run( oTester ) ;;
         Return 0
