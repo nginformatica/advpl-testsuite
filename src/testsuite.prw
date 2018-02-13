@@ -36,7 +36,7 @@
 #define ANSI_YELLOW Chr( 27 ) + '[93m'
 
 Class TestSuite
-	Data aErrors As Array
+    Data aErrors As Array
     Data cName As Character
     Data cDescription As Character
     Data oTester As Object
@@ -52,7 +52,7 @@ Class TestSuite
 EndClass
 
 Method New( cName, cDescription ) Class TestSuite
-	::aErrors := {}
+    ::aErrors := {}
     ::cName := cName
     ::cDescription := cDescription
     Return Self
@@ -106,19 +106,19 @@ Method ReportError( cFeature, cDescription, nStartedAt, oError ) Class TestSuite
     ::oLogger:Error( '| {1} |', { oError:Description } )
     ::oLogger:Error( cLine )
     ::oLogger:Error( ::FormatStack( oError:ErrorStack ) )
-	Return Self
+    Return Self
 
 Method ReportEnd( cFeature, cDescription, nStartedAt ) Class TestSuite
-	If aScan( ::aErrors, { |aError| aError[ 1 ] == cFeature } ) == 0
+    If aScan( ::aErrors, { |aError| aError[ 1 ] == cFeature } ) == 0
         ::oLogger:Success( '[{1}] {2} ({3}s)', { cFeature, cDescription, Seconds() - nStartedAt } )
-	EndIf
-	Return Self
+    EndIf
+    Return Self
 
 Method Run( oTester ) Class TestSuite
     Local oLogger
     Local aFeatures
-	Local cTitle
-	Local cClearScreen
+    Local cTitle
+    Local cClearScreen
     Local nIndex
     Local nReport
     Local cFeatDesc
@@ -143,9 +143,9 @@ Method Run( oTester ) Class TestSuite
     RpcSetEnv( oTester:cDescription_Company, oTester:cDescription_Branch )
     ConOut( ANSI_RESTORE )
     ::oLogger:Log( '> Running on {1} {2} {3}({4}s)', ;
-    	{ oTester:cDescription_Company, oTester:cDescription_Branch, ANSI_YELLOW, Seconds() - nTime } )
+        { oTester:cDescription_Company, oTester:cDescription_Branch, ANSI_YELLOW, Seconds() - nTime } )
 
-	oLastError := ErrorBlock()
+    oLastError := ErrorBlock()
     Private oThis := Self
     Private aTestReport := {}
 
