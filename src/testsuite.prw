@@ -137,9 +137,9 @@ Method RunFeatures( aFeatures ) Class TestSuite
         If ::lVerbose
             For nReport := 1 To Len( aTestReport )
                 If aTestReport[ nReport, 1 ]
-                    ::oLogger:Success( '    + ' + aTestReport[ nReport, 2 ], aTestReport[ nReport, 3 ] )
+                    ::oLogger:Success( '    + ' + aTestReport[ nReport, 2 ] )
                 Else
-                    ::oLogger:Error( '    - ' + aTestReport[ nReport, 2 ], aTestReport[ nReport, 3 ] )
+                    ::oLogger:Error( '    - ' + aTestReport[ nReport, 2 ] )
                 EndIf
             Next
         EndIf
@@ -194,63 +194,3 @@ Method Run( oTester ) Class TestSuite
 Method Expect( xExpr ) Class TestSuite
     Local cType := ValType( xExpr )
     Return FluentExpr():New( xExpr )
-
-Class FluentExpr
-    Data xValue
-    Method New( xValue ) Constructor
-    Method ToHaveType( cType )
-    Method ToBe( xOther )
-    Method ToThrowError()
-    Method ToBeAFile()
-EndClass
-
-Method New( xValue ) Class FluentExpr
-    ::xValue := xValue
-    Return Self
-
-Method ToHaveType( cType ) Class FluentExpr
-    Local cMyType := ValType( ::xValue )
-    If cMyType != cType
-        aAdd( aTestReport, { .F., 'Expected {1} to have type {2}', { cValToChar( ::xValue ), cType } } )
-        UserException( 'Expected ' + cMyType + ' to be of type ' + cType )
-        Return Self
-    EndIf
-    aAdd( aTestReport, { .T., 'Expected {1} to have type {2}', { cValToChar( ::xValue ), cType } } )
-    Return Self
-
-Method ToBe( xOther ) Class FluentExpr
-    If !(::xValue == xOther)
-        aAdd( aTestReport, { .F., 'Expected {1} to be {2}', { cValToChar( ::xValue ), cValToChar( xOther ) } } )
-        UserException( 'Expected ' + cValToChar( ::xValue ) + ' to be ' + cValToChar( xOther ) )
-        Return Self
-    EndIf
-    aAdd( aTestReport, { .T., 'Expected {1} to be {2}', { cValToChar( ::xValue ), cValToChar( xOther ) } } )
-    Return Self
-
-Method ToThrowError() Class FluentExpr
-    Local oError
-    Local bError := ErrorBlock( { |oExc| oError := oExc } )
-    Local cSource := GetCBSource( ::xValue )
-
-    Begin Sequence
-        Eval( ::xValue )
-    End Sequence
-
-    ErrorBlock( bError )
-
-    If oError == Nil
-        aAdd( aTestReport, { .F., 'Expected {1} to throw an error', { cSource } } )
-        UserException( 'Expected ' + cSource + ' to throw error' )
-        Return Self
-    EndIf
-    aAdd( aTestReport, { .T., 'Expected {1} to throw an error', { cSource } } )
-    Return Self
-
-Method ToBeAFile() Class FluentExpr
-    If !File( ::xValue )
-        aAdd( aTestReport, { .F., 'Expected {1} to be a file', { ::xValue } } )
-        UserException( 'Expected ' + ::xValue + ' to be a file' )
-        Return Self
-    EndIf
-    aAdd( aTestReport, { .T., 'Expected {1} to be a file', { ::xValue } } )
-    Return Self
