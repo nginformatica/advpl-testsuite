@@ -45,6 +45,7 @@ Class TestSuite
     Method New( cName, cDescription ) Constructor
     Method GetFeatures()
     Method Run( oTester )
+    Method RunFeatures( aFeatures )
     Method ReportError( cFeature, cDescription, nStartedAt, oError )
     Method ReportEnd( cFeature, cDescription, nStartedAt )
     Method FormatStack( cStack )
@@ -114,21 +115,50 @@ Method ReportEnd( cFeature, cDescription, nStartedAt ) Class TestSuite
     EndIf
     Return Self
 
+Method RunFeatures( aFeatures ) Class TestSuite
+    Local nIndex
+    Local nStartedAt
+    Local cFeatDesc
+    Local nReport
+
+    Private oThis := Self
+    Private aTestReport := {}
+
+    For nIndex := 1 To Len( aFeatures )
+        nStartedAt := Seconds()
+        cFeatDesc := &( 'oThis:oTester:cDescription_Feat' + aFeatures[ nIndex ] )
+        ErrorBlock( { |oError| Self:ReportError( aFeatures[ nIndex ], cFeatDesc, nStartedAt, oError ) })
+        aTestReport := {}
+        Begin Sequence
+            &( 'oThis:oTester:Feat_' + aFeatures[ nIndex ] + '()' )
+        End Sequence
+        Self:ReportEnd( aFeatures[ nIndex ], cFeatDesc, nStartedAt )
+
+        If ::lVerbose
+            For nReport := 1 To Len( aTestReport )
+                If aTestReport[ nReport, 1 ]
+                    ::oLogger:Success( '    + ' + aTestReport[ nReport, 2 ], aTestReport[ nReport, 3 ] )
+                Else
+                    ::oLogger:Error( '    - ' + aTestReport[ nReport, 2 ], aTestReport[ nReport, 3 ] )
+                EndIf
+            Next
+        EndIf
+    Next
+    Return Self
+
 Method Run( oTester ) Class TestSuite
     Local oLogger
     Local aFeatures
     Local cTitle
     Local cClearScreen
-    Local nIndex
-    Local nReport
-    Local cFeatDesc
-    Local nStartedAt
-    Local oLastError
+    Local bLastError
     Local aArea
+    Local lRpcEnv
     Local nTime := Seconds()
 
     ::oTester := oTester
     aFeatures := ::GetFeatures()
+    lRpcEnv := AttIsMemberOf( oTester, 'cDescription_Company' ) .And. AttIsMemberOf( oTester, 'cDescription_Branch' )
 
     cTitle := ANSI_SET_TITLE + '[' + ::cName + '] AdvPL Test Suite' + ANSI_BEL
     cClearScreen := ANSI_CLEAR_SCREEN + ANSI_MOVE_CURSOR_TO_HOME
@@ -145,39 +175,19 @@ Method Run( oTester ) Class TestSuite
     ::oLogger:Log( '> Running on {1} {2} {3}({4}s)', ;
         { oTester:cDescription_Company, oTester:cDescription_Branch, ANSI_YELLOW, Seconds() - nTime } )
 
-    oLastError := ErrorBlock()
-    Private oThis := Self
-    Private aTestReport := {}
-
-    aArea := GetArea()
-    Begin Transaction
-        For nIndex := 1 To Len( aFeatures )
-            nStartedAt := Seconds()
-            cFeatDesc := &( 'oThis:oTester:cDescription_Feat' + aFeatures[ nIndex ] )
-            ErrorBlock( { |oError| Self:ReportError( aFeatures[ nIndex ], cFeatDesc, nStartedAt, oError ) } )
-            aTestReport := {}
-            Begin Sequence
-                &( 'oThis:oTester:Feat_' + aFeatures[ nIndex ] + '()' )
-            End Sequence
-            Self:ReportEnd( aFeatures[ nIndex ], cFeatDesc, nStartedAt )
-
-            If ::lVerbose
-                For nReport := 1 To Len( aTestReport )
-                    If aTestReport[ nReport, 1 ]
-                        ::oLogger:Success( '    + ' + aTestReport[ nReport, 2 ], aTestReport[ nReport, 3 ] )
-                    Else
-                        ::oLogger:Error( '    - ' + aTestReport[ nReport, 2 ], aTestReport[ nReport, 3 ] )
-                    EndIf
-                Next
-            EndIf
-        Next
-
-        DisarmTransaction()
-        Break
-    End Transaction
-    RestArea( aArea )
-
-    ErrorBlock( oLastError )
+    bLastError := ErrorBlock()
+    If lRpcEnv
+        aArea := GetArea()
+        Begin Transaction
+            ::RunFeatures( aFeatures )
+            DisarmTransaction()
+            Break
+        End Transaction
+        RestArea( aArea )
+    Else
+        ::RunFeatures( aFeatures )
+    EndIf
+    ErrorBlock( bLastError )
     ::oLogger:Info( 'Ran {1} tests, {2} failed. Took {3}s', { Len( aFeatures ), Len( ::aErrors ), Seconds() - nTime } )
     Return Self
 
