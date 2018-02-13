@@ -201,6 +201,7 @@ Class FluentExpr
     Method ToHaveType( cType )
     Method ToBe( xOther )
     Method ToThrowError()
+    Method ToBeAFile()
 EndClass
 
 Method New( xValue ) Class FluentExpr
@@ -212,7 +213,7 @@ Method ToHaveType( cType ) Class FluentExpr
     If cMyType != cType
         aAdd( aTestReport, { .F., 'Expected {1} to have type {2}', { cValToChar( ::xValue ), cType } } )
         UserException( 'Expected ' + cMyType + ' to be of type ' + cType )
-        Return
+        Return Self
     EndIf
     aAdd( aTestReport, { .T., 'Expected {1} to have type {2}', { cValToChar( ::xValue ), cType } } )
     Return Self
@@ -221,7 +222,7 @@ Method ToBe( xOther ) Class FluentExpr
     If !(::xValue == xOther)
         aAdd( aTestReport, { .F., 'Expected {1} to be {2}', { cValToChar( ::xValue ), cValToChar( xOther ) } } )
         UserException( 'Expected ' + cValToChar( ::xValue ) + ' to be ' + cValToChar( xOther ) )
-        Return
+        Return Self
     EndIf
     aAdd( aTestReport, { .T., 'Expected {1} to be {2}', { cValToChar( ::xValue ), cValToChar( xOther ) } } )
     Return Self
@@ -240,7 +241,16 @@ Method ToThrowError() Class FluentExpr
     If oError == Nil
         aAdd( aTestReport, { .F., 'Expected {1} to throw an error', { cSource } } )
         UserException( 'Expected ' + cSource + ' to throw error' )
-        Return
+        Return Self
     EndIf
     aAdd( aTestReport, { .T., 'Expected {1} to throw an error', { cSource } } )
+    Return Self
+
+Method ToBeAFile() Class FluentExpr
+    If !File( ::xValue )
+        aAdd( aTestReport, { .F., 'Expected {1} to be a file', { ::xValue } } )
+        UserException( 'Expected ' + ::xValue + ' to be a file' )
+        Return Self
+    EndIf
+    aAdd( aTestReport, { .T., 'Expected {1} to be a file', { ::xValue } } )
     Return Self

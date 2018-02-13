@@ -16,7 +16,7 @@
   - [ ] `ToSatisfy`
   - [ ] `ToBeAFolder`
   - [ ] `ToBeAFolderWithFiles`
-  - [ ] `ToBeAFile`
+  - [x] `ToBeAFile`
   - [ ] `ToBeAFileWithContents`
   - [ ] `ToHaveProperty`
   - [ ] `ToHaveMethod`
