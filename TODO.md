@@ -1,12 +1,13 @@
 # TODO
 
-- [ ] Add verbose mode to TestSuite
-  - [ ] Add a way to enable verbose flag
-  - [ ] When verbose flag is on, log each expectation
+- [x] Add verbose mode to TestSuite
+  - [x] Add a way to enable verbose flag
+  - [x] When verbose flag is on, log each expectation
 - [ ] Expectations
   - [x] `ToBe`
   - [x] `ToThrowError`
   - [x] `ToHaveType`
+  - [ ] `ToFailWith`
   - [ ] `ToBeLessThan`
   - [ ] `ToBeGreaterThan`
   - [ ] `ToHaveLength`
@@ -17,6 +18,8 @@
   - [ ] `ToBeAFolderWithFiles`
   - [ ] `ToBeAFile`
   - [ ] `ToBeAFileWithContents`
+  - [ ] `ToHaveProperty`
+  - [ ] `ToHaveMethod`
 - [ ] Implement deep look on `ToBe`
  - [ ] Different types should make the test fail
  - [ ] Object lookup is by name and properties
