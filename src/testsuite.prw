@@ -46,6 +46,7 @@ Class TestSuite
     Method GetFeatures()
     Method Run( oTester )
     Method RunFeatures( aFeatures )
+    Method RunBefore()
     Method ReportError( cFeature, cDescription, nStartedAt, oError )
     Method ReportEnd( cFeature, cDescription, nStartedAt )
     Method FormatStack( cStack )
@@ -117,14 +118,18 @@ Method ReportEnd( cFeature, cDescription, nStartedAt ) Class TestSuite
 
 Method RunFeatures( aFeatures ) Class TestSuite
     Local nIndex
+    Local nCount
     Local nStartedAt
     Local cFeatDesc
     Local nReport
+    Local nFinished := 0
+    Local cPercent
 
     Private oThis := Self
     Private aTestReport := {}
 
-    For nIndex := 1 To Len( aFeatures )
+    nCount := Len( aFeatures )
+    For nIndex := 1 To nCount
         nStartedAt := Seconds()
         cFeatDesc := &( 'oThis:oTester:cDescription_Feat' + aFeatures[ nIndex ] )
         ErrorBlock( { |oError| Self:ReportError( aFeatures[ nIndex ], cFeatDesc, nStartedAt, oError ) })
@@ -143,14 +148,34 @@ Method RunFeatures( aFeatures ) Class TestSuite
                 EndIf
             Next
         EndIf
+
+        nFinished++
+        cPercent := AllTrim( Str( nFinished * 100 / nCount ) )
+        ConOut( ANSI_SET_TITLE + '[' + cPercent + '% DONE] [' + ::cName + '] AdvPL Test Suite' + ANSI_BEL )
     Next
     Return Self
 
+Method RunBefore() Class TestSuite
+    Local oFatalError
+    Local bLastError := ErrorBlock({ |oError| oFatalError := oError })
+
+    Begin Sequence
+        If MethIsMemberOf( ::oTester, 'Before' )
+            ::oTester:Before()
+        EndIf
+    End Sequence
+
+    ErrorBlock( bLastError )
+
+    If oFatalError != Nil
+        ::oLogger:Error( 'Fatal error while running [Before], so I will not proceed' )
+        ::oLogger:Error( ::FormatStack( oFatalError:ErrorStack ) )
+        Return .F.
+    EndIf
+    Return .T.
+
 Method Run( oTester ) Class TestSuite
-    Local oLogger
     Local aFeatures
-    Local cTitle
-    Local cClearScreen
     Local bLastError
     Local aArea
     Local lRpcEnv
@@ -160,20 +185,23 @@ Method Run( oTester ) Class TestSuite
     aFeatures := ::GetFeatures()
     lRpcEnv := AttIsMemberOf( oTester, 'cDescription_Company' ) .And. AttIsMemberOf( oTester, 'cDescription_Branch' )
 
-    cTitle := ANSI_SET_TITLE + '[' + ::cName + '] AdvPL Test Suite' + ANSI_BEL
-    cClearScreen := ANSI_CLEAR_SCREEN + ANSI_MOVE_CURSOR_TO_HOME
-
-    ConOut( cTitle )
-    ConOut( cClearScreen )
+    ConOut( ANSI_SET_TITLE + '[' + ::cName + '] AdvPL Test Suite' + ANSI_BEL )
+    ConOut( ANSI_CLEAR_SCREEN + ANSI_MOVE_CURSOR_TO_HOME )
 
     ::oLogger := Logger():New( ::cName )
     ::oLogger:Info( '[{1}] AdvPL Test Suite v0.1', { ::cName } )
     ::oLogger:Log( '> {1}, {2} feature(s)' + ANSI_SAVE, { ::cDescription, Len( aFeatures ) } )
 
-    RpcSetEnv( oTester:cDescription_Company, oTester:cDescription_Branch )
-    ConOut( ANSI_RESTORE )
-    ::oLogger:Log( '> Running on {1} {2} {3}({4}s)', ;
-        { oTester:cDescription_Company, oTester:cDescription_Branch, ANSI_YELLOW, Seconds() - nTime } )
+    If lRpcEnv
+        RpcSetEnv( oTester:cDescription_Company, oTester:cDescription_Branch )
+        ConOut( ANSI_RESTORE )
+        ::oLogger:Log( '> Running on {1} {2} {3}({4}s)', ;
+            { oTester:cDescription_Company, oTester:cDescription_Branch, ANSI_YELLOW, Seconds() - nTime } )
+    EndIf
+
+    If !::RunBefore()
+        Return Self
+    EndIf
 
     bLastError := ErrorBlock()
     If lRpcEnv

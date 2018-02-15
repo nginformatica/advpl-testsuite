@@ -7,7 +7,7 @@
   - [x] When verbose flag is on, log each expectation
 - [ ] Expectations
   - [x] `ToBe`
-  - [x] `ToThrowError`
+  - [ ] `ToThrowError`
   - [x] `ToHaveType`
   - [ ] `ToFailWith`
   - [ ] `ToBeLessThan`
@@ -26,3 +26,6 @@
  - [ ] Different types should make the test fail
  - [ ] Object lookup is by name and properties
  - [ ] Array lookup is by length and elements
+- [x] Implement `Before` to clean up the things before running the tests, like files
+- [x] Implement percent of features
+- [ ] Implement percent of 'expect' with a bar

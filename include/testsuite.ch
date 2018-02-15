@@ -18,6 +18,14 @@
     _ObjClassMethod( Feat_<cFeat>, , ) ;;
     _ObjClassData( cDescription_Feat<cFeat>, String, , <cDesc> )
 
+#xcommand Enable Before ;
+    => ;
+    _ObjClassMethod( Before, , )
+
+#xcommand Before TestSuite <cSuite> ;
+    => ;
+    Function ___TestSuite_<cSuite>____Before()
+
 #xcommand Environment <cCompany> <cBranch> ;
     => ;
     _ObjClassData( cDescription_Company, String, , <cCompany> ) ;;

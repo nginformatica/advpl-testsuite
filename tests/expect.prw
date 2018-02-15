@@ -3,25 +3,22 @@
 
 TestSuite Expect Description 'The test suite to test the test suite itself!' Verbose
     Environment 'T3' 'S SC 01'
-    // Feature CodeBlocks Description 'Tests with exceptions and code blocks'
+    Enable Before
     Feature Files Description 'Tests with files should be working'
     Feature Folders Description 'Tests with folders should be :top:'
 EndTestSuite
 
-// Feature CodeBlocks TestSuite Expect
-//     Local bCorrect := { || 1 + 1 }
-//     Local bWrong := { |xWhat| xWhat + '...' }
-
-//     ::Expect( bCorrect ):Not():ToThrowError()
-//     ::Expect( bWrong ):ToThrowError()
-//     Return
-
-Feature Files TestSuite Expect
-    Local nHandle
-
+Before TestSuite Expect
     If File( '\love.txt' )
         FErase( '\love.txt' )
     EndIf
+    If ExistDir( '\problems' )
+        DirRemove( '\problems' )
+    EndIf
+    Return
+
+Feature Files TestSuite Expect
+    Local nHandle
 
     nHandle := FCreate( '\love.txt' )
     FWrite( nHandle, 'I love you <3' )
@@ -35,10 +32,6 @@ Feature Files TestSuite Expect
     Return
 
 Feature Folders TestSuite Expect
-    If ExistDir( '\problems' )
-        DirRemove( '\problems' )
-    EndIf
-
     MakeDir( '\problems' )
     ::Expect( '\problems' ):ToBeAFolder()
     ::Expect( '\happiness' ):Not():ToBeAFolder()
