@@ -28,4 +28,4 @@
  - [ ] Array lookup is by length and elements
 - [x] Implement `Before` to clean up the things before running the tests, like files
 - [x] Implement percent of features
-- [ ] Implement percent of 'expect' with a bar
+- [x] Implement percent of 'expect' with a bar

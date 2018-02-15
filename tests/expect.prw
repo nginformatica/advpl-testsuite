@@ -33,7 +33,7 @@ Feature Files TestSuite Expect
 
 Feature Folders TestSuite Expect
     MakeDir( '\problems' )
-    ::Expect( '\problems' ):ToBeAFolder()
+    ::Expect( '\problemas' ):ToBeAFolder()
     ::Expect( '\happiness' ):Not():ToBeAFolder()
     Return
 

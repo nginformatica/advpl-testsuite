@@ -34,6 +34,9 @@
 #define ANSI_SAVE Chr( 27 ) + '7'
 #define ANSI_RESTORE Chr( 27 ) + '8'
 #define ANSI_YELLOW Chr( 27 ) + '[93m'
+#define ANSI_BG_LIGHT_RED Chr( 27 ) + '[101m'
+#define ANSI_BG_LIGHT_GREEN Chr( 27 ) + '[102m'
+#define ANSI_BG_RESET Chr( 27 ) + '[49m'
 
 Class TestSuite
     Data aErrors As Array
@@ -122,8 +125,13 @@ Method RunFeatures( aFeatures ) Class TestSuite
     Local nStartedAt
     Local cFeatDesc
     Local nReport
-    Local nFinished := 0
     Local cPercent
+    Local nFinished := 0
+    Local nPassed := 0
+    Local nFailed := 0
+    Local nTotal
+    Local cPassed
+    Local cFailed
 
     Private oThis := Self
     Private aTestReport := {}
@@ -143,8 +151,10 @@ Method RunFeatures( aFeatures ) Class TestSuite
             For nReport := 1 To Len( aTestReport )
                 If aTestReport[ nReport, 1 ]
                     ::oLogger:Success( '    + ' + aTestReport[ nReport, 2 ] )
+                    nPassed++
                 Else
                     ::oLogger:Error( '    - ' + aTestReport[ nReport, 2 ] )
+                    nFailed++
                 EndIf
             Next
         EndIf
@@ -153,6 +163,16 @@ Method RunFeatures( aFeatures ) Class TestSuite
         cPercent := AllTrim( Str( nFinished * 100 / nCount ) )
         ConOut( ANSI_SET_TITLE + '[' + cPercent + '% DONE] [' + ::cName + '] AdvPL Test Suite' + ANSI_BEL )
     Next
+
+    If ::lVerbose
+        nTotal := nPassed + nFailed
+        nPassed := nPassed * 50 / nTotal
+        cPassed := Replicate( ' ', Int( nPassed ) )
+        cFailed := Replicate( ' ', Round( nFailed * 50 / nTotal, 0 ) )
+
+        ::oLogger:Log( '{1}{2} {3}%', { ANSI_BG_LIGHT_GREEN + cPassed, ANSI_BG_LIGHT_RED + cFailed + ANSI_BG_RESET, Padr( nPassed * 2, 2 ) } )
+    EndIf
+
     Return Self
 
 Method RunBefore() Class TestSuite
