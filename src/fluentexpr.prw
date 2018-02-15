@@ -30,6 +30,7 @@ Class FluentExpr
     Method ToBe( xOther )
     Method ToThrowError()
     Method ToBeAFile()
+    Method ToBeAFolder()
 EndClass
 
 Method New( xValue ) Class FluentExpr
@@ -107,5 +108,21 @@ Method ToBeAFile() Class FluentExpr
             Throw 'Expected {1} to be a file' with { ::xValue }
         EndIf
         Passed 'Expected {1} to be a file' With { ::xValue }
+    EndIf
+    Return Self
+
+Method ToBeAFolder() Class FluentExpr
+    Local lIsFolder := ExistDir( ::xValue )
+
+    If ::lNot
+        If lIsFolder
+            Throw 'Expected {1} to not be a folder' with { ::xValue }
+        EndIf
+        Passed 'Expected {1} to not be a folder' With { ::xValue }
+    Else
+        If !lIsFolder
+            Throw 'Expected {1} to be a folder' with { ::xValue }
+        EndIf
+        Passed 'Expected {1} to be a folder' With { ::xValue }
     EndIf
     Return Self
