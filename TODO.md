@@ -16,7 +16,7 @@
   - [ ] `ToHaveProperty`
   - [ ] `ToInclude`
   - [ ] `ToSatisfy`
-  - [ ] `ToBeAFolder`
+  - [x] `ToBeAFolder`
   - [ ] `ToBeAFolderWithFiles`
   - [x] `ToBeAFile`
   - [ ] `ToBeAFileWithContents`

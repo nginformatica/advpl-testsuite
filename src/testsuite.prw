@@ -170,7 +170,11 @@ Method RunFeatures( aFeatures ) Class TestSuite
         cPassed := Replicate( ' ', Int( nPassed ) )
         cFailed := Replicate( ' ', Round( nFailed * 50 / nTotal, 0 ) )
 
-        ::oLogger:Log( '{1}{2} {3}%', { ANSI_BG_LIGHT_GREEN + cPassed, ANSI_BG_LIGHT_RED + cFailed + ANSI_BG_RESET, Padr( nPassed * 2, 2 ) } )
+        ::oLogger:Log( '{1}{2} {3}%', { ;
+            ANSI_BG_LIGHT_GREEN + cPassed, ;
+            ANSI_BG_LIGHT_RED + cFailed + ANSI_BG_RESET, ;
+            AllTrim( Str( Round( nPassed * 2, 2 ) ) ) ;
+        } )
     EndIf
 
     Return Self
@@ -240,5 +244,4 @@ Method Run( oTester ) Class TestSuite
     Return Self
 
 Method Expect( xExpr ) Class TestSuite
-    Local cType := ValType( xExpr )
     Return FluentExpr():New( xExpr )
