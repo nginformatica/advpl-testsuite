@@ -26,10 +26,12 @@
     => ;
     Function ___TestSuite_<cSuite>____Before()
 
-#xcommand Environment <cCompany> <cBranch> ;
+#xcommand Enable Environment <cCompany> <cBranch> ;
     => ;
     _ObjClassData( cDescription_Company, String, , <cCompany> ) ;;
     _ObjClassData( cDescription_Branch, String, , <cBranch> )
+
+
 
 #xcommand Feature <cFeat> ;
     TestSuite <cSuite> ;

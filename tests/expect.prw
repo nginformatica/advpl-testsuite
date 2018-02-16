@@ -2,7 +2,7 @@
 #include 'testsuite.ch'
 
 TestSuite Expect Description 'The test suite to test the test suite itself!' Verbose
-    Environment 'T3' 'S SC 01'
+    Enable Environment 'T3' 'S SC 01'
     Enable Before
     Feature Files Description 'Tests with files should be working'
     Feature Folders Description 'Tests with folders should be :top:'
