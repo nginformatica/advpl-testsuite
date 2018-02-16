@@ -19,7 +19,7 @@
   - [x] `ToBeAFolder`
   - [ ] `ToBeAFolderWithFiles`
   - [x] `ToBeAFile`
-  - [ ] `ToBeAFileWithContents`
+  - [x] `ToBeAFileWithContents`
   - [ ] `ToHaveProperty`
   - [ ] `ToHaveMethod`
 - [ ] Implement deep look on `ToBe`

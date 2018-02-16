@@ -1,4 +1,5 @@
 #include 'protheus.ch'
+#include 'fileio.ch'
 
 #xcommand Throw <cMsg> With <aValues> ;
     => ;
@@ -21,6 +22,21 @@ Static Function Format( cString, aValues )
     Next
     Return cResult
 
+Static Function GetFileContents( cFileName )
+    Local nHandler := FOpen( cFileName, FO_READWRITE + FO_SHARED )
+    Local nSize    := 0
+    Local xBuffer  := ''
+
+    If -1 == nHandler
+        Return Nil
+    EndIf
+
+    nSize := FSeek( nHandler, 0, FS_END )
+    FSeek( nHandler, 0 )
+    FRead( nHandler, xBuffer, nSize )
+    FClose( nHandler )
+    Return xBuffer
+
 Class FluentExpr
     Data xValue
     Data lNot
@@ -29,6 +45,7 @@ Class FluentExpr
 
     Method ToBe( xOther )
     Method ToBeAFile()
+    Method ToBeAFileWithContents( cContent )
     Method ToBeAFolder()
     Method ToHaveType( cType )
     Method ToThrowError()
@@ -75,6 +92,23 @@ Method ToBeAFile() Class FluentExpr
     EndIf
     Return Self
 
+Method ToBeAFileWithContents( cContent ) Class FluentExpr
+    Local lIsFile := File( ::xValue )
+
+    If ::lNot
+        If lIsFile .And. GetFileContents( ::xValue ) == cContent
+            Throw 'Expected {1} to not be a file with contents "{2}"' with { ::xValue, cContent }
+        EndIf
+        Passed 'Expected {1} to not be a file with contents "{2}"' With { ::xValue, cContent }
+    Else
+        If !lIsFile .Or. !(GetFileContents( ::xValue ) == cContent)
+            Throw 'Expected {1} to be a file with contents "{2}"' with { ::xValue, cContent }
+        EndIf
+        Passed 'Expected {1} to be a file with contents "{2}"' With { ::xValue, cContent }
+    EndIf
+    Return Self
+
+
 Method ToBeAFolder() Class FluentExpr
     Local lIsFolder := ExistDir( ::xValue )
 
@@ -98,13 +132,11 @@ Method ToHaveType( cType ) Class FluentExpr
         If cMyType == cType
             Throw 'Expected {1} to not have type {2}, but it does' With { ::xValue, cType }
         EndIf
-
         Passed 'Expected {1} to not have type {2} (it is a {3})' With { ::xValue, cType, cMyType }
     Else
         If !(cMyType == cType)
             Throw 'Expected {1} to have type {2}, but it has type {3}' With { ::xValue, cType, cMyType }
         EndIf
-
         Passed 'Expected {1} to have type {2}' With { ::xValue, cType }
     EndIf
     Return Self
