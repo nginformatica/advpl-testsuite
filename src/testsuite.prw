@@ -31,12 +31,112 @@
 #define ANSI_YELLOW Chr( 27 ) + '[93m'
 #define ANSI_RED Chr( 27 ) + '[91m'
 #define ANSI_RESET Chr( 27 ) + '[0m'
+#define ANSI_BOLD Chr( 27 ) + '[1m'
 #define ANSI_SAVE Chr( 27 ) + '7'
 #define ANSI_RESTORE Chr( 27 ) + '8'
 #define ANSI_YELLOW Chr( 27 ) + '[93m'
+#define ANSI_GRAY Chr( 27 ) + '[90m'
+#define ANSI_CYAN Chr( 27 ) + '[36m'
+#define ANSI_LIGHT_RED Chr( 27 ) + '[91m'
 #define ANSI_BG_LIGHT_RED Chr( 27 ) + '[101m'
 #define ANSI_BG_LIGHT_GREEN Chr( 27 ) + '[102m'
 #define ANSI_BG_RESET Chr( 27 ) + '[49m'
+#define ANSI_MOVE_UP Chr( 27 ) + '[1A'
+
+Static Function TryExtractSource( aStack, cResource )
+    Local nIndex
+    Local nPos
+    Local cStackFile
+    Local nLine
+    Local xByteArray
+    Local cRealPath
+    Local aSourceLines
+    Local aResult
+
+    For nIndex := 1 To Len( aStack )
+        If '(' $ aStack[ nIndex ] .And. '.PRW)' $ aStack[ nIndex ] .And. 'line : ' $ aStack[ nIndex ]
+            nPos := At( '(', aStack[ nIndex ] )
+            cStackFile := SubStr( aStack[ nIndex ], nPos + 1, At( ')', aStack[ nIndex ] ) - nPos - 1 )
+            If cStackFile == 'FLUENTEXPR.PRW' .Or. cStackFile == 'TESTSUITE.PRW'
+                Loop
+            EndIf
+
+            cResource := cStackFile
+            aStack[ nIndex ] := AllTrim( aStack[ nIndex ] )
+            nPos := RAt( ' ', aStack[ nIndex ] )
+            nLine := Val( SubStr( aStack[ nIndex ], nPos + 1, Len( aStack[ nIndex ] ) - nPos ) )
+            Exit
+        EndIf
+    Next
+
+    If cResource != Nil .And. nLine != Nil
+        xByteArray := GetApoRes( cResource )
+        nMainByteCode := At( 'ADVPL', xByteArray )
+
+        If nMainByteCode == 0
+            Return {}
+        EndIf
+
+        xByteArray := SubStr( xByteArray, 0, nMainByteCode )
+        nPos := RAt( ':', xByteArray )
+        cRealPath := SubStr( xByteArray, nPos - 1, RAt( '.prw', xByteArray ) - nPos + 5 )
+
+        If !File( cRealPath )
+            Return {}
+        EndIf
+
+        aSourceLines := StrTokArr2( ReadFileContents( cRealPath ), Chr( 10 ), .T. )
+        If Len( aSourceLines ) < nLine
+            Return {}
+        EndIf
+
+        aResult := {}
+        For nIndex := Max( 1, nLine - 2 ) To Min( Len( aSourceLines ), nLine + 2 )
+            aAdd( aResult, { .T., nIndex, aSourceLines[ nIndex ] } )
+            If nLine == nIndex
+                aAdd( aResult, { .F., Len( aSourceLines[ nIndex ] ) } )
+            EndIf
+        Next
+        Return aResult
+    EndIf
+    Return {}
+
+// TODO: Write a good lexer for it
+Static Function PrintSource( aSourceLines, cResource, cError, oLogger )
+    Local nIndex
+    Local nTok
+    Local cLine
+    Local aTokens := { ;
+        'Function', 'Class', 'EndClass', 'Local', 'Private', ;
+        'Static', 'Return', '+', '-', '(', ')', ':' ;
+    }
+
+    oLogger:Log( '' )
+    oLogger:Log( '{1}---{2}---', { ANSI_BOLD, cResource } )
+    oLogger:Log( '' )
+
+    For nIndex := 1 To Len( aSourceLines )
+        If aSourceLines[ nIndex, 1 ]
+            cLine := aSourceLines[ nIndex, 3 ]
+            For nTok := 1 To Len( aTokens )
+                cLine := StrTran( cLine, aTokens[ nTok ], ANSI_CYAN + aTokens[ nTok ] + ANSI_RESET )
+            Next
+
+            oLogger:Log( '{1}{2} | {3}', { ;
+                ANSI_GRAY, ;
+                Str( aSourceLines[ nIndex, 2 ], 4 ), ;
+                cLine ;
+            } )
+        Else
+            ConOut( ANSI_SAVE + ANSI_MOVE_UP + Chr( 27 ) + '[28C' + ANSI_LIGHT_RED + '>' + ANSI_RESET )
+            oLogger:Log( '{1}     | {2}{3}{4}', { ;
+                ANSI_GRAY, ANSI_BOLD + ANSI_LIGHT_RED, Replicate( '^', aSourceLines[ nIndex, 2 ] ), ANSI_RESET } )
+            oLogger:Log( '{1}     | {2}{3}{4}', { ANSI_GRAY, ANSI_LIGHT_RED, cError, ANSI_RESET } )
+        EndIf
+    Next
+
+    oLogger:Log( '' )
+    Return
 
 Class TestSuite
     Data aErrors As Array
@@ -104,13 +204,23 @@ Method GetFeatures() Class TestSuite
     Return aFeatures
 
 Method ReportError( cFeature, cDescription, nStartedAt, oError ) Class TestSuite
-    Local cLine := Replicate( '-', Len( oError:Description ) + 4 )
+    Local cLine
+    Local aSourceLines
+    Local cResource
+
     aAdd( ::aErrors, { cFeature, oError:Description } )
     ::oLogger:Error( '[{1}] {2} ({3}s)', { cFeature, cDescription, Seconds() - nStartedAt } )
-    ::oLogger:Error( cLine )
-    ::oLogger:Error( '| {1} |', { oError:Description } )
-    ::oLogger:Error( cLine )
-    ::oLogger:Error( ::FormatStack( oError:ErrorStack ) )
+
+    aSourceLines := TryExtractSource( StrTokArr2( oError:ErrorStack, Chr( 10 ), .T. ), @cResource )
+    If Empty( aSourceLines )
+        cLine := Replicate( '-', Len( oError:Description ) + 4 )
+        ::oLogger:Error( cLine )
+        ::oLogger:Error( '| {1} |', { oError:Description } )
+        ::oLogger:Error( cLine )
+        ::oLogger:Error( ::FormatStack( oError:ErrorStack ) )
+    Else
+        PrintSource( aSourceLines, cResource, oError:Description, ::oLogger )
+    EndIf
     Return Self
 
 Method ReportEnd( cFeature, cDescription, nStartedAt ) Class TestSuite

@@ -22,7 +22,7 @@ Static Function Format( cString, aValues )
     Next
     Return cResult
 
-Static Function GetFileContents( cFileName )
+Function ReadFileContents( cFileName )
     Local nHandler := FOpen( cFileName, FO_READWRITE + FO_SHARED )
     Local nSize    := 0
     Local xBuffer  := ''
@@ -96,12 +96,12 @@ Method ToBeAFileWithContents( cContent ) Class FluentExpr
     Local lIsFile := File( ::xValue )
 
     If ::lNot
-        If lIsFile .And. GetFileContents( ::xValue ) == cContent
+        If lIsFile .And. ReadFileContents( ::xValue ) == cContent
             Throw 'Expected {1} to not be a file with contents "{2}"' with { ::xValue, cContent }
         EndIf
         Passed 'Expected {1} to not be a file with contents "{2}"' With { ::xValue, cContent }
     Else
-        If !lIsFile .Or. !(GetFileContents( ::xValue ) == cContent)
+        If !lIsFile .Or. !(ReadFileContents( ::xValue ) == cContent)
             Throw 'Expected {1} to be a file with contents "{2}"' with { ::xValue, cContent }
         EndIf
         Passed 'Expected {1} to be a file with contents "{2}"' With { ::xValue, cContent }

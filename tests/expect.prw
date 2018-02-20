@@ -30,7 +30,7 @@ Feature Files TestSuite Expect
     ::Expect( '\hate.txt' ):Not():ToBeAfile()
     ::Expect( '\love.txt' ):ToBeAFile()
     ::Expect( '\love.txt' ):Not():ToBeAFileWithContents( 'I hate you :@' )
-    ::Expect( '\love.txt' ):ToBeAFileWithContents( 'I love you <3' )
+    ::Expect( '\love.txt' ):ToBeAFileWithContents( 'I love you <3+' )
     Return
 
 Feature Folders TestSuite Expect
