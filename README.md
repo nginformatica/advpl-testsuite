@@ -96,7 +96,32 @@ feature to feature, but every destructive update will be restored at the end of 
 
 ### Fluent expectations
 
-TODO
+Fluent expectations are tracked test atoms for common things. You can use them with `::Expect`.
+You can negate expecations by using `:Not()`:
+
+```xbase
+::Expect( 10 ):Not():ToBe( 20 )
+```
+
+#### Expectations
+
+Here is the list of implemented (marked) and still not implemented expectations:
+
+- [x] `:ToBe( <expression> )` - Comparison between expressions of any type
+- [x] `:ToBeAFile()` - Ensures the provided path is a file
+- [x] `:ToBeAFileWithContents( <string> )` - Ensures the path is a file with the provided contents
+- [x] `:ToBeAFolder()` - Ensures the path is a folder
+- [ ] `:ToBeAFolderWithFiles( <array> )` - Ensures the path is a folder with the file list
+- [ ] `:ToBeGreaterThan( <expression> )` - Ensures the left expression is greater than the right one
+- [ ] `:ToBeLessThan( <expression> )` - Ensures the left expression is less than the right one
+- [ ] `:ToFailWith( <string> )` - Given a codeblack and an error message, the codeblock must fail with that message
+- [ ] `:ToHaveLength( <number> )` - Checks the length of a string or an array
+- [ ] `:ToHaveMethod( <string> )` - Ensures the object in the left has dispatch to the method in the right
+- [ ] `:ToHaveProperty( <number> )` - Ensures an object has a specific property
+- [ ] `:ToHaveType( <string> )` - The letter of the type, type checking
+- [ ] `:ToInclude( <expression> )` - Ensures an array contain an item, or a string contains a substring
+- [ ] `:ToSatisfy( <codeblock> )` - Ensures the left expression satisfies the right codeblock
+- [ ] `:ToThrowError()`` - The test passes if the provided codeblock has an error
 
 ## Installation
 
