@@ -131,3 +131,12 @@ Installing AdvPL TestSuite is quite simple!
 - Download and compile all the files under [src/](./src/) directory
 
 And you are done!
+
+
+## Credits
+
+- Written by [Marcelo Camargo](https://github.com/haskellcamargo)
+- Special thanks to [Vitor Batista](https://github.com/vitorebatista) and [Victor Andrade](https://github.com/VctrAndrade)
+
+- Copyright (C) 2018 - NG Informática; All rights reserved
+- Licensed under MIT license as open source
