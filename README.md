@@ -121,7 +121,7 @@ Here is the list of implemented (marked) and still not implemented expectations:
 - [ ] `:ToHaveType( <string> )` - The letter of the type, type checking
 - [ ] `:ToInclude( <expression> )` - Ensures an array contain an item, or a string contains a substring
 - [ ] `:ToSatisfy( <codeblock> )` - Ensures the left expression satisfies the right codeblock
-- [ ] `:ToThrowError()`` - The test passes if the provided codeblock has an error
+- [ ] `:ToThrowError()` - The test passes if the provided codeblock has an error
 
 ## Installation
 
