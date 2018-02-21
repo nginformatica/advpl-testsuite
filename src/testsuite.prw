@@ -327,6 +327,7 @@ Method Run( oTester ) Class TestSuite
     ::oLogger:Log( '> {1}, {2} feature(s)' + ANSI_SAVE, { ::cDescription, Len( aFeatures ) } )
 
     If lRpcEnv
+        RpcSetType(3)
         RpcSetEnv( oTester:cDescription_Company, oTester:cDescription_Branch )
         ConOut( ANSI_RESTORE )
         ::oLogger:Log( '> Running on {1} {2} {3}({4}s)', ;
