@@ -18,9 +18,19 @@ Static Function Format( cString, aValues )
     Local cResult := cString
     Local nIndex
     For nIndex := 1 To Len( aValues )
-        cResult := StrTran( cResult, '{' + AllTrim( Str( nIndex ) ) + '}', cValToChar( aValues[ nIndex ] ) )
+        cResult := StrTran( cResult, '{' + AllTrim( Str( nIndex ) ) + '}', ToString( aValues[ nIndex ] ) )
     Next
     Return cResult
+
+Static Function ToString( xValue )
+    If ValType( xValue ) == "A"
+        Return '{ ' + ArrTokStr(xValue, ', ') + ' }'
+    ElseIf ValType( xValue ) == "B"
+        Return GetCBSource( xValue )
+    ElseIf ValType( xValue ) == "O"
+        Return ArrTokStr( ClassMethArr( xValue, .T. ), ' | ' )
+    EndIf
+    Return cValToChar( xValue )
 
 Function ReadFileContents( cFileName )
     Local nHandler := FOpen( cFileName, FO_READWRITE + FO_SHARED )
@@ -61,18 +71,20 @@ Method Not() Class FluentExpr
     Return Self
 
 Method ToBe( xOther ) Class FluentExpr
+    Local cValue := ToString(::xValue)
+    Local cOther := ToString(xOther)
     If ::lNot
-        If ::xValue == xOther
-            Throw 'Expected {1} to not be {2}' With { ::xValue, xOther }
+        If cValue == cOther
+            Throw 'Expected {1} to not be {2}' With { cValue, cOther }
         EndIf
 
-        Passed 'Expected {1} to not be {2}' With { ::xValue, xOther }
+        Passed 'Expected {1} to not be {2}' With { cValue, cOther }
     Else
-        If !(::xValue == xOther)
-            Throw 'Expected {1} to be {2}' With { ::xValue, xOther }
+        If !(cValue == cOther)
+            Throw 'Expected {1} to be {2}' With { cValue, cOther }
         EndIf
 
-        Passed 'Expected {1} to be {2}' With { ::xValue, xOther }
+        Passed 'Expected {1} to be {2}' With { cValue, cOther }
     EndIf
     Return Self
 
