@@ -138,7 +138,7 @@ Static Function PrintSource( aSourceLines, cResource, cError, oLogger )
     oLogger:Log( '' )
     Return
 
-Class TestSuite
+Class TestSuite From LongNameClass
     Data aErrors As Array
     Data cName As Character
     Data cDescription As Character
