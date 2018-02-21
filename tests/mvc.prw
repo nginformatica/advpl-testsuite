@@ -17,7 +17,7 @@ Feature Create TestSuite MVC
     ::Expect( oModel:SetValue( 'MNTA010_ST0', 'T0_ESPECIA', '888' ) ):ToBe( .T. )
     ::Expect( oModel:SetValue( 'MNTA010_ST0', 'T0_NOME', 'TESTSUITE DESCRIPTION' ) ):ToBe( .T. )
     ::Expect( oModel:VldData() ):ToBe( .T. )
-    ::Expect( oModel:GetErrorMessage() ):Not():ToBe( {} )
+    ::Expect( oModel:GetErrorMessage() ):ToBe( { 'MNTA010', 'POST', , , , , , , } )
 
     oModel:CommitData()
     oModel:DeActivate()
@@ -33,6 +33,7 @@ Feature Duplicate TestSuite MVC
     ::Expect( oModel:SetValue( 'MNTA010_ST0', 'T0_ESPECIA', '888' ) ):Not():ToBe( .T. )
     ::Expect( oModel:SetValue( 'MNTA010_ST0', 'T0_NOME', 'TESTSUITE DESCRIPTION' ) ):ToBe( .T. )
     ::Expect( oModel:VldData() ):Not():ToBe( .T. )
+    ::Expect( oModel:GetErrorMessage() ):Not():ToBe( { 'MNTA010', 'POST', , , , , , , } )
 
     oModel:DeActivate()
 
