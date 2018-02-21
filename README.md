@@ -97,7 +97,7 @@ feature to feature, but every destructive update will be restored at the end of 
 ### Fluent expectations
 
 Fluent expectations are tracked test atoms for common things. You can use them with `::Expect`.
-You can negate expecations by using `:Not()`:
+You can negate expectations by using `:Not()`:
 
 ```xbase
 ::Expect( 10 ):Not():ToBe( 20 )
@@ -114,7 +114,7 @@ Here is the list of implemented (marked) and still not implemented expectations:
 - [ ] `:ToBeAFolderWithFiles( <array> )` - Ensures the path is a folder with the file list
 - [ ] `:ToBeGreaterThan( <expression> )` - Ensures the left expression is greater than the right one
 - [ ] `:ToBeLessThan( <expression> )` - Ensures the left expression is less than the right one
-- [ ] `:ToFailWith( <string> )` - Given a codeblack and an error message, the codeblock must fail with that message
+- [ ] `:ToFailWith( <string> )` - Given a codeblock and an error message, the codeblock must fail with that message
 - [ ] `:ToHaveLength( <number> )` - Checks the length of a string or an array
 - [ ] `:ToHaveMethod( <string> )` - Ensures the object in the left has dispatch to the method in the right
 - [ ] `:ToHaveProperty( <number> )` - Ensures an object has a specific property
