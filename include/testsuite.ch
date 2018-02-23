@@ -1,3 +1,6 @@
+#ifndef _TESTSUITE_CH
+#define _TESTSUITE_CH
+
 #xcommand TestSuite <cName> ;
     [ <description: Description> <cDesc> ] ;
     [ <verbose: Verbose> ] ;
@@ -33,8 +36,6 @@
     _ObjClassData( cDescription_Company, String, , <cCompany> ) ;;
     _ObjClassData( cDescription_Branch, String, , <cBranch> )
 
-
-
 #xcommand Feature <cFeat> ;
     TestSuite <cSuite> ;
     => ;
@@ -52,3 +53,20 @@
         oTester:oParent:lVerbose := __VERBOSE__ ;;
         oTester:oParent:Run( oTester ) ;;
         Return 0
+
+Static Function ReadFileContents( cFileName )
+    Local nHandler := FOpen( cFileName, FO_READWRITE + FO_SHARED )
+    Local nSize    := 0
+    Local xBuffer  := ''
+
+    If -1 == nHandler
+        Return Nil
+    EndIf
+
+    nSize := FSeek( nHandler, 0, FS_END )
+    FSeek( nHandler, 0 )
+    FRead( nHandler, xBuffer, nSize )
+    FClose( nHandler )
+    Return xBuffer
+
+#endif // _TESTSUITE_CH
