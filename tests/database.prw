@@ -2,7 +2,7 @@
 #include 'testsuite.ch'
 
 TestSuite DataBase Description 'Database restoration and transaction tests' Verbose
-    Environment 'T3' 'S SC 01'
+    Enable Environment 'T3' 'S SC 01'
     Data cFile As Character
     Feature CreateTable Description 'We can create a new table'
     Feature DeleteTable Description 'We can delete a table'

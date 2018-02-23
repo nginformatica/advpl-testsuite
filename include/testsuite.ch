@@ -8,10 +8,12 @@
     Static __NAME__ := <(cName)> ;;
     Static __DESC__ := <cDesc> ;;
     Static __VERBOSE__ := <.verbose.> ;;
-    _ObjNewClass( TestSuite_<cName>, TestSuite ) ;;
+    _ObjNewClass( TestSuite_<cName>, LongNameClass ) ;;
     _ObjClassMethod( New, ( cName, cDescription ), ) ;;
+    _ObjClassMethod( Expect, ( xExpr ), ) ;;
     _ObjClassData( cDescription, String, , <cDesc> ) ;;
-    _ObjClassData( cName, String, , <(cName)> )
+    _ObjClassData( cName, String, , <(cName)> ) ;;
+    _ObjClassData( oParent, String, ,  )
 
 #xcommand EndTestSuite => _ObjEndClass()
 
@@ -42,12 +44,14 @@
 #xcommand CompileTestSuite <cSuite> ;
     => ;
     Function ___TestSuite_<cSuite>____New( cName, cDescription ) ;;
-        _Super:New( cName, cDescription ) ;;
+        Self:oParent := TestSuite():New( cName, cDescription ) ;;
         Return Self ;;
+    Function ___TestSuite_<cSuite>____Expect( xExpr ) ;;
+        Return FluentExpr():New( xExpr ) ;;
     Function U_<cSuite> ;;
         Local oTester := TestSuite_<cSuite>():New( __NAME__, __DESC__ ) ;;
-        oTester:lVerbose := __VERBOSE__ ;;
-        oTester:Run( oTester ) ;;
+        oTester:oParent:lVerbose := __VERBOSE__ ;;
+        oTester:oParent:Run( oTester ) ;;
         Return 0
 
 Static Function ReadFileContents( cFileName )

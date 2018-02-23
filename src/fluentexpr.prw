@@ -18,9 +18,20 @@ Static Function Format( cString, aValues )
     Local cResult := cString
     Local nIndex
     For nIndex := 1 To Len( aValues )
-        cResult := StrTran( cResult, '{' + AllTrim( Str( nIndex ) ) + '}', cValToChar( aValues[ nIndex ] ) )
+        cResult := StrTran( cResult, '{' + AllTrim( Str( nIndex ) ) + '}', ToString( aValues[ nIndex ] ) )
     Next
     Return cResult
+
+Static Function ToString( xValue )
+    Local cType := ValType( xValue )
+    If cType == "A"
+        Return '{ ' + ArrTokStr( xValue, ', ') + ' }'
+    ElseIf cType == "B"
+        Return GetCBSource( xValue )
+    ElseIf cType == "O"
+        Return ArrTokStr( ClassMethArr( xValue, .T. ), ' | ' )
+    EndIf
+    Return cValToChar( xValue )
 
 Class FluentExpr
     Data xValue
@@ -46,18 +57,20 @@ Method Not() Class FluentExpr
     Return Self
 
 Method ToBe( xOther ) Class FluentExpr
+    Local cValue := ToString( ::xValue )
+    Local cOther := ToString( xOther )
     If ::lNot
-        If ::xValue == xOther
-            Throw 'Expected {1} to not be {2}' With { ::xValue, xOther }
+        If cValue == cOther
+            Throw 'Expected {1} to not be {2}' With { cValue, cOther }
         EndIf
 
-        Passed 'Expected {1} to not be {2}' With { ::xValue, xOther }
+        Passed 'Expected {1} to not be {2}' With { cValue, cOther }
     Else
-        If !(::xValue == xOther)
-            Throw 'Expected {1} to be {2}' With { ::xValue, xOther }
+        If !(cValue == cOther)
+            Throw 'Expected {1} to be {2}' With { cValue, cOther }
         EndIf
 
-        Passed 'Expected {1} to be {2}' With { ::xValue, xOther }
+        Passed 'Expected {1} to be {2}' With { cValue, cOther }
     EndIf
     Return Self
 

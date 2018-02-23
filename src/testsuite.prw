@@ -138,7 +138,7 @@ Static Function PrintSource( aSourceLines, cResource, cError, oLogger )
     oLogger:Log( '' )
     Return
 
-Class TestSuite
+Class TestSuite From LongNameClass
     Data aErrors As Array
     Data cName As Character
     Data cDescription As Character
@@ -327,6 +327,7 @@ Method Run( oTester ) Class TestSuite
     ::oLogger:Log( '> {1}, {2} feature(s)' + ANSI_SAVE, { ::cDescription, Len( aFeatures ) } )
 
     If lRpcEnv
+        RpcSetType( 3 )
         RpcSetEnv( oTester:cDescription_Company, oTester:cDescription_Branch )
         ConOut( ANSI_RESTORE )
         ::oLogger:Log( '> Running on {1} {2} {3}({4}s)', ;

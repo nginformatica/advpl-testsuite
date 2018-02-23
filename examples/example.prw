@@ -20,6 +20,11 @@ Feature Gravacao TestSuite CentroDeCusto
     ::Expect( 10 ):ToBe( 10 )
     ::Expect( 20 ):ToBe( 20 )
     ::Expect( 4040 ):ToBe( 4040 )
+    ::Expect( { 'a', 'b', 'c' } ):ToBe( { 'a', 'b', 'c' } )
+    ::Expect( { 'a', 'b', { 1, 2, { } } } ):Not():ToBe( { 'a', 'b', 'c' } )
+    ::Expect( { || } ):ToBe( { || } )
+    ::Expect( Self ):ToBe( Self )
+    ::Expect( { || } ):Not():ToBe( { || a + b } )
 
     dbSelectArea( 'CTT' )
     RecLock( 'CTT', .T. )
