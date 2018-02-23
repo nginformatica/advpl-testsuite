@@ -30,9 +30,9 @@ Feature Duplicate TestSuite MVC
     oModel:SetOperation( MODEL_OPERATION_INSERT )
     oModel:Activate()
 
-    ::Expect( oModel:SetValue( 'MNTA010_ST0', 'T0_ESPECIA', '888' ) ):Not():ToBe( .T. )
+    ::Expect( oModel:SetValue( 'MNTA010_ST0', 'T0_ESPECIA', '888' ) ):ToBe( .F. )
     ::Expect( oModel:SetValue( 'MNTA010_ST0', 'T0_NOME', 'TESTSUITE DESCRIPTION' ) ):ToBe( .T. )
-    ::Expect( oModel:VldData() ):Not():ToBe( .T. )
+    ::Expect( oModel:VldData() ):ToBe( .F. )
     ::Expect( oModel:GetErrorMessage() ):Not():ToBe( { 'MNTA010', 'POST', , , , , , , } )
 
     oModel:DeActivate()
