@@ -1,6 +1,6 @@
 #include 'protheus.ch'
 #include 'testsuite.ch'
-#Include 'FWMVCDef.ch'
+#include 'FWMVCDef.ch'
 
 TestSuite MVC Description 'MVC Examples' Verbose
     Enable Environment '99' '01'
