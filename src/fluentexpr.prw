@@ -22,21 +22,6 @@ Static Function Format( cString, aValues )
     Next
     Return cResult
 
-Function ReadFileContents( cFileName )
-    Local nHandler := FOpen( cFileName, FO_READWRITE + FO_SHARED )
-    Local nSize    := 0
-    Local xBuffer  := ''
-
-    If -1 == nHandler
-        Return Nil
-    EndIf
-
-    nSize := FSeek( nHandler, 0, FS_END )
-    FSeek( nHandler, 0 )
-    FRead( nHandler, xBuffer, nSize )
-    FClose( nHandler )
-    Return xBuffer
-
 Class FluentExpr
     Data xValue
     Data lNot
