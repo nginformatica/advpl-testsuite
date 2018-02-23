@@ -23,11 +23,12 @@ Static Function Format( cString, aValues )
     Return cResult
 
 Static Function ToString( xValue )
-    If ValType( xValue ) == "A"
+    Local cType := ValType( xValue )
+    If cType == "A"
         Return '{ ' + ArrTokStr(xValue, ', ') + ' }'
-    ElseIf ValType( xValue ) == "B"
+    ElseIf cType == "B"
         Return GetCBSource( xValue )
-    ElseIf ValType( xValue ) == "O"
+    ElseIf cType == "O"
         Return ArrTokStr( ClassMethArr( xValue, .T. ), ' | ' )
     EndIf
     Return cValToChar( xValue )
