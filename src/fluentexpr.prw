@@ -25,7 +25,7 @@ Static Function Format( cString, aValues )
 Static Function ToString( xValue )
     Local cType := ValType( xValue )
     If cType == "A"
-        Return '{ ' + ArrTokStr(xValue, ', ') + ' }'
+        Return '{ ' + ArrTokStr( xValue, ', ') + ' }'
     ElseIf cType == "B"
         Return GetCBSource( xValue )
     ElseIf cType == "O"
@@ -72,8 +72,8 @@ Method Not() Class FluentExpr
     Return Self
 
 Method ToBe( xOther ) Class FluentExpr
-    Local cValue := ToString(::xValue)
-    Local cOther := ToString(xOther)
+    Local cValue := ToString( ::xValue )
+    Local cOther := ToString( xOther )
     If ::lNot
         If cValue == cOther
             Throw 'Expected {1} to not be {2}' With { cValue, cOther }
