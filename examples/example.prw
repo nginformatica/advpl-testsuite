@@ -2,7 +2,7 @@
 #include 'testsuite.ch'
 
 TestSuite CentroDeCusto Description 'Testes de gravacao de centro de custo' Verbose
-    Environment 'T3' 'S SC 01'
+    Enable Environment 'T3' 'S SC 01'
     Data nRegistros As Numeric
     Feature Gravacao Description 'Grava centro de custo na CTT'
     Feature Leitura Description 'Le os dados gravados na CTT'
