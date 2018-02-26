@@ -54,6 +54,8 @@
         oTester:oParent:Run( oTester ) ;;
         Return 0
 
+#include 'fileio.ch'
+
 Static Function ReadFileContents( cFileName )
     Local nHandler := FOpen( cFileName, FO_READWRITE + FO_SHARED )
     Local nSize    := 0

@@ -23,6 +23,7 @@
  */
 
 #include 'protheus.ch'
+#include 'testsuite.ch'
 
 #define ANSI_CLEAR_SCREEN Chr( 27 ) + '[2J'
 #define ANSI_MOVE_CURSOR_TO_HOME Chr( 27 ) + '[H'

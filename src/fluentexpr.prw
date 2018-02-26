@@ -1,5 +1,5 @@
 #include 'protheus.ch'
-#include 'fileio.ch'
+#include 'testsuite.ch'
 
 #xcommand Throw <cMsg> With <aValues> ;
     => ;
