@@ -1,19 +1,6 @@
 #include 'protheus.ch'
 #include 'testsuite.ch'
 
-#xcommand Throw <cMsg> With <aValues> ;
-    => ;
-    __MSG__ := Format( <cMsg>, <aValues> ) ;;
-    aAdd( aTestReport, { .F., __MSG__ } ) ;;
-    UserException( __MSG__ ) ;;
-    Return Self
-
-#xcommand Passed <cMsg> With <aValues> ;
-    => ;
-    __MSG__ := Format( <cMsg>, <aValues> ) ;;
-    aAdd( aTestReport, { .T., __MSG__ } ) ;;
-    Return Self
-
 Static Function Format( cString, aValues )
     Local cResult := cString
     Local nIndex
@@ -33,7 +20,7 @@ Static Function ToString( xValue )
     EndIf
     Return cValToChar( xValue )
 
-Class FluentExpr
+Class FluentExpr From LongNameClass
     Data xValue
     Data lNot
     Method New( xValue ) Constructor
