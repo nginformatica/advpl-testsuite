@@ -56,8 +56,8 @@ Static Function TryExtractSource( aStack, cResource )
 
     For nIndex := 1 To Len( aStack )
         If '(' $ aStack[ nIndex ] .And. '.PRW)' $ aStack[ nIndex ] .And. 'line : ' $ aStack[ nIndex ]
-            nPos := At( '(', aStack[ nIndex ] )
-            cStackFile := SubStr( aStack[ nIndex ], nPos + 1, At( ')', aStack[ nIndex ] ) - nPos - 1 )
+            nPos := RAt( '(', aStack[ nIndex ] )
+            cStackFile := SubStr( aStack[ nIndex ], nPos + 1, RAt( ')', aStack[ nIndex ] ) - nPos - 1 )
             If cStackFile == 'FLUENTEXPR.PRW' .Or. cStackFile == 'TESTSUITE.PRW'
                 Loop
             EndIf
