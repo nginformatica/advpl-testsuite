@@ -1,6 +1,13 @@
 #ifndef _TESTSUITE_CH
 #define _TESTSUITE_CH
 
+#include 'fluentexpr.ch'
+
+#xcommand Test Suite <cDesc> [VERBOSE] => TestSuite SUITEID Description <cDesc> VERBOSE
+#xcommand End Test Suite => EndTestSuite ; CompileTestSuite SUITEID
+#xcommand Define Feature <cFeat> <cDesc> => Feature <cFeat> Description <cDesc> ; Feature <cFeat> TestSuite SUITEID
+#xcommand Define Before  => Enable Before ; Before TestSuite SUITEID
+
 #xcommand TestSuite <cName> ;
     [ <description: Description> <cDesc> ] ;
     [ <verbose: Verbose> ] ;
@@ -25,7 +32,7 @@
 
 #xcommand Enable Before ;
     => ;
-    _ObjClassMethod( Before, , )
+    _ObjClassMethod( Before, , ) 
 
 #xcommand Before TestSuite <cSuite> ;
     => ;
